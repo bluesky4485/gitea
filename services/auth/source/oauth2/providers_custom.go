@@ -5,6 +5,7 @@ package oauth2
 
 import (
 	"code.gitea.io/gitea/modules/setting"
+	"github.com/markbates/goth/providers/huizhi"
 
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/azureadv2"
@@ -74,6 +75,15 @@ func init() {
 		}, func(clientID, secret, callbackURL string, custom *CustomURLMapping, scopes []string) (goth.Provider, error) {
 			scopes = append(scopes, "read_user")
 			return gitlab.NewCustomisedURL(clientID, secret, callbackURL, custom.AuthURL, custom.TokenURL, custom.ProfileURL, scopes...), nil
+		}))
+
+	RegisterGothProvider(NewCustomProvider(
+		"uniuser", "Uniuser", &CustomURLSettings{
+			AuthURL:    availableAttribute(huizhi.AuthURL),
+			TokenURL:   availableAttribute(huizhi.TokenURL),
+			ProfileURL: availableAttribute(huizhi.ProfileURL),
+		}, func(clientID, secret, callbackURL string, custom *CustomURLMapping, scopes []string) (goth.Provider, error) {
+			return huizhi.NewCustomisedURL(clientID, secret, callbackURL, custom.AuthURL, custom.TokenURL, custom.ProfileURL, scopes...), nil
 		}))
 
 	RegisterGothProvider(NewCustomProvider(
